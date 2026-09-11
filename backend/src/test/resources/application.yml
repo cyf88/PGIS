@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:pgis;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+pgis:
+  map-cache:
+    ttl-minutes: 5
+    max-size: 2000
+  map:
+    default-basemap: gaode
+    basemaps:
+      - id: gaode
+        label: 高德地图
+        tile-url: "https://webst0{s}.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}"
+        tile-subdomains: "1234"
+        tile-attribution: "&copy; 高德地图"
+        tile-max-zoom: 18
+      - id: intranet
+        label: 内网栅格
+        tile-url: "http://10.2.164.43:10000/tileService/raster-3857/Maps/hebei21/EzMap?Service=getImage&Type=RGB&ZoomOffset=0&Col={x}&Row={y}&Zoom={z}&v=0.3"
+        tile-attribution: "&copy; 内网地图"
+        tile-max-zoom: 18
+    province-zoom: 6
+    city-max-zoom: 11
+    fallback-min-lng: 113.45
+    fallback-min-lat: 36.05
+    fallback-max-lng: 119.87
+    fallback-max-lat: 42.62

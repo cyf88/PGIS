@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pgis.deviceinfo.DeviceInfoMapper">
+
+    <sql id="cols">
+        sbbh, sbpp, sbxh, zblx, ssgajgjgdm, cphm, jybh, jyxm, jysfz, hh, lxdh, sbsyzt, bz,
+        sjczlxdm, sjly, lrsj, lrdwdm, lrdwmc, lrrxm, lrrsfzh, xgsj, xgdwdm, xgdwmc, xgrxm, xgrsfzh, xxzjbh
+    </sql>
+
+    <sql id="filters">
+        <where>
+            <if test="sbbh != null and sbbh != ''">AND sbbh LIKE CONCAT('%', #{sbbh}, '%')</if>
+            <if test="jyxm != null and jyxm != ''">AND jyxm LIKE CONCAT('%', #{jyxm}, '%')</if>
+            <if test="ssgajgjgdm != null and ssgajgjgdm != ''">AND ssgajgjgdm LIKE CONCAT('%', #{ssgajgjgdm}, '%')</if>
+            <if test="sjly != null and sjly != ''">AND sjly = #{sjly}</if>
+        </where>
+    </sql>
+
+    <select id="selectById" resultType="com.pgis.deviceinfo.DeviceInfo">
+        SELECT <include refid="cols"/> FROM jysb_sbxx_001 WHERE xxzjbh = #{xxzjbh}
+    </select>
+
+    <select id="selectPage" resultType="com.pgis.deviceinfo.DeviceInfo">
+        SELECT <include refid="cols"/> FROM jysb_sbxx_001
+        <include refid="filters"/>
+        ORDER BY lrsj DESC, xxzjbh
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(1) FROM jysb_sbxx_001
+        <include refid="filters"/>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO jysb_sbxx_001 (<include refid="cols"/>)
+        VALUES (#{sbbh}, #{sbpp}, #{sbxh}, #{zblx}, #{ssgajgjgdm}, #{cphm}, #{jybh}, #{jyxm}, #{jysfz}, #{hh},
+                #{lxdh}, #{sbsyzt}, #{bz}, #{sjczlxdm}, #{sjly}, #{lrsj}, #{lrdwdm}, #{lrdwmc}, #{lrrxm}, #{lrrsfzh},
+                #{xgsj}, #{xgdwdm}, #{xgdwmc}, #{xgrxm}, #{xgrsfzh}, #{xxzjbh})
+    </insert>
+
+    <update id="update">
+        UPDATE jysb_sbxx_001 SET
+            sbbh=#{sbbh}, sbpp=#{sbpp}, sbxh=#{sbxh}, zblx=#{zblx}, ssgajgjgdm=#{ssgajgjgdm}, cphm=#{cphm},
+            jybh=#{jybh}, jyxm=#{jyxm}, jysfz=#{jysfz}, hh=#{hh}, lxdh=#{lxdh}, sbsyzt=#{sbsyzt}, bz=#{bz},
+            sjczlxdm=#{sjczlxdm}, sjly=#{sjly}, lrsj=#{lrsj}, lrdwdm=#{lrdwdm}, lrdwmc=#{lrdwmc}, lrrxm=#{lrrxm},
+            lrrsfzh=#{lrrsfzh}, xgsj=#{xgsj}, xgdwdm=#{xgdwdm}, xgdwmc=#{xgdwmc}, xgrxm=#{xgrxm}, xgrsfzh=#{xgrsfzh}
+        WHERE xxzjbh = #{xxzjbh}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM jysb_sbxx_001 WHERE xxzjbh = #{xxzjbh}
+    </delete>
+
+    <select id="selectExistingIds" resultType="string">
+        SELECT xxzjbh FROM jysb_sbxx_001
+        WHERE xxzjbh IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </select>
+
+    <insert id="upsertBatch">
+        INSERT INTO jysb_sbxx_001 (<include refid="cols"/>)
+        VALUES
+        <foreach collection="list" item="e" separator=",">
+            (#{e.sbbh}, #{e.sbpp}, #{e.sbxh}, #{e.zblx}, #{e.ssgajgjgdm}, #{e.cphm}, #{e.jybh}, #{e.jyxm}, #{e.jysfz},
+             #{e.hh}, #{e.lxdh}, #{e.sbsyzt}, #{e.bz}, #{e.sjczlxdm}, #{e.sjly}, #{e.lrsj}, #{e.lrdwdm}, #{e.lrdwmc},
+             #{e.lrrxm}, #{e.lrrsfzh}, #{e.xgsj}, #{e.xgdwdm}, #{e.xgdwmc}, #{e.xgrxm}, #{e.xgrsfzh}, #{e.xxzjbh})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            sbbh=VALUES(sbbh), sbpp=VALUES(sbpp), sbxh=VALUES(sbxh), zblx=VALUES(zblx), ssgajgjgdm=VALUES(ssgajgjgdm),
+            cphm=VALUES(cphm), jybh=VALUES(jybh), jyxm=VALUES(jyxm), jysfz=VALUES(jysfz), hh=VALUES(hh),
+            lxdh=VALUES(lxdh), sbsyzt=VALUES(sbsyzt), bz=VALUES(bz), sjczlxdm=VALUES(sjczlxdm), sjly=VALUES(sjly),
+            lrsj=VALUES(lrsj), lrdwdm=VALUES(lrdwdm), lrdwmc=VALUES(lrdwmc), lrrxm=VALUES(lrrxm), lrrsfzh=VALUES(lrrsfzh),
+            xgsj=VALUES(xgsj), xgdwdm=VALUES(xgdwdm), xgdwmc=VALUES(xgdwmc), xgrxm=VALUES(xgrxm), xgrsfzh=VALUES(xgrsfzh)
+    </insert>
+
+    <resultMap id="withLocMap" type="com.pgis.deviceinfo.DeviceInfoWithLocation" autoMapping="true">
+        <id property="xxzjbh" column="xxzjbh"/>
+        <result property="jd" column="loc_jd"/>
+        <result property="wd" column="loc_wd"/>
+        <result property="sbsyjssj" column="loc_sbsyjssj"/>
+    </resultMap>
+
+    <select id="countBySjly" resultType="long">
+        SELECT COUNT(1) FROM jysb_sbxx_001 WHERE sjly = #{sjly}
+    </select>
+
+    <select id="selectBySjlyWithLatestLocation" resultMap="withLocMap">
+        SELECT t.*, loc.jd AS loc_jd, loc.wd AS loc_wd, loc.sbsyjssj AS loc_sbsyjssj
+        FROM (
+            SELECT <include refid="cols"/>
+            FROM jysb_sbxx_001
+            WHERE sjly = #{sjly}
+            ORDER BY lrsj DESC, xxzjbh
+            LIMIT #{size} OFFSET #{offset}
+        ) t
+        LEFT JOIN jysb_sbxx_002 loc
+            ON loc.sbbh = t.sbbh
+            AND loc.xxzjbh = (
+                SELECT x.xxzjbh
+                FROM jysb_sbxx_002 x
+                WHERE x.sbbh = t.sbbh
+                ORDER BY x.sbsyjssj DESC, x.lrsj DESC, x.xxzjbh DESC
+                LIMIT 1
+            )
+    </select>
+
+    <!-- 按设备取全局最新定位（走 idx_002_sbbh_latest），不按视野过滤 -->
+    <sql id="devicesBySjly">
+        SELECT sbbh, MIN(sjly) AS sjly, MIN(zblx) AS zblx, MIN(jyxm) AS jyxm
+        FROM jysb_sbxx_001
+        <where>
+            <if test="sjly != null and sjly != ''">
+                AND sjly LIKE CONCAT(#{sjly}, '%')
+            </if>
+        </where>
+        GROUP BY sbbh
+    </sql>
+
+    <sql id="latestBySjly">
+        SELECT d.sbbh, loc.jd, loc.wd, d.sjly
+        FROM (<include refid="devicesBySjly"/>) d
+        INNER JOIN jysb_sbxx_002 loc ON loc.xxzjbh = (
+            SELECT y.xxzjbh
+            FROM jysb_sbxx_002 y
+            WHERE y.sbbh = d.sbbh
+              AND y.jd IS NOT NULL
+              AND y.wd IS NOT NULL
+            ORDER BY y.sbsyjssj DESC, y.lrsj DESC, y.xxzjbh DESC
+            LIMIT 1
+        )
+    </sql>
+
+    <select id="selectLatestDevicesInBounds" resultType="com.pgis.deviceinfo.LatestMapPoint">
+        SELECT d.sbbh, loc.jd, loc.wd, d.sjly, d.zblx, d.jyxm
+        FROM (<include refid="devicesBySjly"/>) d
+        <choose>
+            <when test="useLatestTable">
+                INNER JOIN jysb_sbxx_002_latest loc ON loc.sbbh = d.sbbh
+            </when>
+            <otherwise>
+                INNER JOIN jysb_sbxx_002 loc ON loc.xxzjbh = (
+                    SELECT y.xxzjbh
+                    FROM jysb_sbxx_002 y
+                    WHERE y.sbbh = d.sbbh
+                      AND y.jd IS NOT NULL
+                      AND y.wd IS NOT NULL
+                    ORDER BY y.sbsyjssj DESC, y.lrsj DESC, y.xxzjbh DESC
+                    LIMIT 1
+                )
+            </otherwise>
+        </choose>
+        WHERE loc.jd BETWEEN #{minLng} AND #{maxLng}
+          AND loc.wd BETWEEN #{minLat} AND #{maxLat}
+    </select>
+
+    <!-- 再过滤视野，避免对 002 做框内全表窗口排序 -->
+    <sql id="latestInBounds">
+        SELECT loc.sbbh, loc.jd, loc.wd, loc.sjly
+        FROM (<include refid="latestBySjly"/>) loc
+        WHERE loc.jd BETWEEN #{minLng} AND #{maxLng}
+          AND loc.wd BETWEEN #{minLat} AND #{maxLat}
+    </sql>
+
+    <select id="selectRegionBounds" resultType="com.pgis.deviceinfo.RegionBounds">
+        SELECT
+            MIN(loc.jd) AS minLng,
+            MIN(loc.wd) AS minLat,
+            MAX(loc.jd) AS maxLng,
+            MAX(loc.wd) AS maxLat
+        FROM (<include refid="latestBySjly"/>) loc
+        WHERE loc.jd BETWEEN -180 AND 180
+          AND loc.wd BETWEEN -90 AND 90
+          AND NOT (loc.jd = 0 AND loc.wd = 0)
+    </select>
+
+    <select id="countLatestInBounds" resultType="long">
+        SELECT COUNT(1) FROM (<include refid="latestInBounds"/>) loc
+    </select>
+
+    <select id="selectRegionClustersInBounds" resultType="com.pgis.deviceinfo.MapClusterPoint">
+        SELECT
+            t.region AS sbbh,
+            AVG(t.jd) AS lng,
+            AVG(t.wd) AS lat,
+            COUNT(1) AS count
+        FROM (
+            SELECT
+                loc.jd,
+                loc.wd,
+                LEFT(loc.sjly, #{prefixLen}) AS region
+            FROM (<include refid="latestInBounds"/>) loc
+            WHERE loc.sjly IS NOT NULL AND loc.sjly &lt;&gt; ''
+        ) t
+        GROUP BY t.region
+        ORDER BY count DESC
+        LIMIT 200
+    </select>
+
+    <select id="selectPointsInBounds" resultType="com.pgis.deviceinfo.MapClusterPoint">
+        SELECT
+            loc.jd AS lng,
+            loc.wd AS lat,
+            1 AS count,
+            loc.sbbh AS sbbh,
+            (SELECT d.jyxm FROM jysb_sbxx_001 d WHERE d.sbbh = loc.sbbh LIMIT 1) AS jyxm
+        FROM (<include refid="latestInBounds"/>) loc
+        ORDER BY loc.sbbh
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectTypeCountsInBounds" resultType="com.pgis.deviceinfo.EquipmentTypeStat">
+        SELECT
+            d.zblx AS zblx,
+            COUNT(1) AS count
+        FROM (<include refid="latestInBounds"/>) loc
+        INNER JOIN (
+            SELECT sbbh, MIN(zblx) AS zblx
+            FROM jysb_sbxx_001
+            GROUP BY sbbh
+        ) d ON d.sbbh = loc.sbbh
+        GROUP BY d.zblx
+    </select>
+</mapper>

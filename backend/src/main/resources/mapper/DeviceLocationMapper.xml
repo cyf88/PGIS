@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pgis.devicelocation.DeviceLocationMapper">
+
+    <sql id="cols">
+        sbbh, jd, wd, spsd, czsd, hjj, gc, jd_01, sbsykssj, sbsyjssj, sjczlxdm, sjly,
+        lrsj, lrdwdm, lrdwmc, lrrxm, lrrsfzh, xgsj, xgdwdm, xgdwmc, xgrxm, xgrsfzh, xxzjbh
+    </sql>
+
+    <resultMap id="locMap" type="com.pgis.devicelocation.DeviceLocation" autoMapping="true">
+        <id property="xxzjbh" column="xxzjbh"/>
+        <result property="jd01" column="jd_01"/>
+    </resultMap>
+
+    <sql id="filters">
+        <where>
+            <if test="sbbh != null and sbbh != ''">AND sbbh LIKE CONCAT('%', #{sbbh}, '%')</if>
+            <if test="sjly != null and sjly != ''">AND sjly = #{sjly}</if>
+        </where>
+    </sql>
+
+    <select id="selectById" resultMap="locMap">
+        SELECT <include refid="cols"/> FROM jysb_sbxx_002 WHERE xxzjbh = #{xxzjbh}
+    </select>
+
+    <select id="selectPage" resultMap="locMap">
+        SELECT <include refid="cols"/> FROM jysb_sbxx_002
+        <include refid="filters"/>
+        ORDER BY lrsj DESC, xxzjbh
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(1) FROM jysb_sbxx_002
+        <include refid="filters"/>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO jysb_sbxx_002 (<include refid="cols"/>)
+        VALUES (#{sbbh}, #{jd}, #{wd}, #{spsd}, #{czsd}, #{hjj}, #{gc}, #{jd01}, #{sbsykssj}, #{sbsyjssj},
+                #{sjczlxdm}, #{sjly}, #{lrsj}, #{lrdwdm}, #{lrdwmc}, #{lrrxm}, #{lrrsfzh},
+                #{xgsj}, #{xgdwdm}, #{xgdwmc}, #{xgrxm}, #{xgrsfzh}, #{xxzjbh})
+    </insert>
+
+    <update id="update">
+        UPDATE jysb_sbxx_002 SET
+            sbbh=#{sbbh}, jd=#{jd}, wd=#{wd}, spsd=#{spsd}, czsd=#{czsd}, hjj=#{hjj}, gc=#{gc}, jd_01=#{jd01},
+            sbsykssj=#{sbsykssj}, sbsyjssj=#{sbsyjssj}, sjczlxdm=#{sjczlxdm}, sjly=#{sjly},
+            lrsj=#{lrsj}, lrdwdm=#{lrdwdm}, lrdwmc=#{lrdwmc}, lrrxm=#{lrrxm}, lrrsfzh=#{lrrsfzh},
+            xgsj=#{xgsj}, xgdwdm=#{xgdwdm}, xgdwmc=#{xgdwmc}, xgrxm=#{xgrxm}, xgrsfzh=#{xgrsfzh}
+        WHERE xxzjbh = #{xxzjbh}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM jysb_sbxx_002 WHERE xxzjbh = #{xxzjbh}
+    </delete>
+
+    <select id="selectExistingIds" resultType="string">
+        SELECT xxzjbh FROM jysb_sbxx_002
+        WHERE xxzjbh IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </select>
+
+    <insert id="upsertBatch">
+        INSERT INTO jysb_sbxx_002 (<include refid="cols"/>)
+        VALUES
+        <foreach collection="list" item="e" separator=",">
+            (#{e.sbbh}, #{e.jd}, #{e.wd}, #{e.spsd}, #{e.czsd}, #{e.hjj}, #{e.gc}, #{e.jd01}, #{e.sbsykssj},
+             #{e.sbsyjssj}, #{e.sjczlxdm}, #{e.sjly}, #{e.lrsj}, #{e.lrdwdm}, #{e.lrdwmc}, #{e.lrrxm}, #{e.lrrsfzh},
+             #{e.xgsj}, #{e.xgdwdm}, #{e.xgdwmc}, #{e.xgrxm}, #{e.xgrsfzh}, #{e.xxzjbh})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            sbbh=VALUES(sbbh), jd=VALUES(jd), wd=VALUES(wd), spsd=VALUES(spsd), czsd=VALUES(czsd), hjj=VALUES(hjj),
+            gc=VALUES(gc), jd_01=VALUES(jd_01), sbsykssj=VALUES(sbsykssj), sbsyjssj=VALUES(sbsyjssj),
+            sjczlxdm=VALUES(sjczlxdm), sjly=VALUES(sjly), lrsj=VALUES(lrsj), lrdwdm=VALUES(lrdwdm),
+            lrdwmc=VALUES(lrdwmc), lrrxm=VALUES(lrrxm), lrrsfzh=VALUES(lrrsfzh), xgsj=VALUES(xgsj),
+            xgdwdm=VALUES(xgdwdm), xgdwmc=VALUES(xgdwmc), xgrxm=VALUES(xgrxm), xgrsfzh=VALUES(xgrsfzh)
+    </insert>
+
+    <delete id="deleteLatestBySbbhs">
+        DELETE FROM jysb_sbxx_002_latest
+        WHERE sbbh IN
+        <foreach collection="sbbhs" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <insert id="insertLatestBySbbhs">
+        INSERT INTO jysb_sbxx_002_latest (sbbh, jd, wd, sbsyjssj, lrsj, xxzjbh)
+        SELECT sbbh, jd, wd, sbsyjssj, lrsj, xxzjbh
+        FROM (
+            SELECT sbbh, jd, wd, sbsyjssj, lrsj, xxzjbh,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sbbh
+                    ORDER BY sbsyjssj DESC, lrsj DESC, xxzjbh DESC
+                ) AS rn
+            FROM jysb_sbxx_002
+            WHERE sbbh IN
+            <foreach collection="sbbhs" item="id" open="(" separator="," close=")">#{id}</foreach>
+              AND jd IS NOT NULL
+              AND wd IS NOT NULL
+        ) t
+        WHERE rn = 1
+    </insert>
+</mapper>

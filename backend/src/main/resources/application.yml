@@ -1,0 +1,63 @@
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 3600000
+    max-swallow-size: -1
+    max-http-form-post-size: -1
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 4GB
+      max-request-size: 4GB
+      file-size-threshold: 10MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/pgis?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+pgis:
+  map-cache:
+    ttl-minutes: 5
+    max-size: 2000
+  map:
+    default-basemap: gaode
+    basemaps:
+      - id: gaode
+        label: 高德地图
+        tile-url: "https://webst0{s}.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}"
+        tile-subdomains: "1234"
+        tile-attribution: "&copy; 高德地图"
+        tile-max-zoom: 18
+      - id: intranet
+        label: 内网栅格
+        tile-url: "http://10.2.164.43:10000/tileService/raster-3857/Maps/hebei21/EzMap?Service=getImage&Type=RGB&ZoomOffset=0&Col={x}&Row={y}&Zoom={z}&v=0.3"
+        tile-attribution: "&copy; 内网地图"
+        tile-max-zoom: 18
+    tile-url: "https://webst0{s}.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}"
+    tile-subdomains: "1234"
+    tile-attribution: "&copy; 高德地图"
+    tile-max-zoom: 18
+    province-zoom: 6
+    city-max-zoom: 11
+    fallback-min-lng: 113.45
+    fallback-min-lat: 36.05
+    fallback-max-lng: 119.87
+    fallback-max-lat: 42.62
