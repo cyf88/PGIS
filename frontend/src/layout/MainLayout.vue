@@ -15,6 +15,11 @@
           <el-menu-item index="/device-location/query">查询</el-menu-item>
           <el-menu-item index="/device-location/import">导入</el-menu-item>
         </el-sub-menu>
+        <el-sub-menu index="alarm">
+          <template #title>接处警报警信息</template>
+          <el-menu-item index="/alarm/list">列表查询</el-menu-item>
+          <el-menu-item index="/alarm/map">地图展示</el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
     <el-container>
@@ -38,7 +43,9 @@ const titleMap = {
   '/device-info/map': '警用设备基本信息 · 地图聚合',
   '/device-info/import': '警用设备基本信息 · 导入（sb001*.csv）',
   '/device-location/query': '警用设备定位信息 · 查询',
-  '/device-location/import': '警用设备定位信息 · 导入（sb002*.csv）'
+  '/device-location/import': '警用设备定位信息 · 导入（sb002*.csv）',
+  '/alarm/list': '接处警报警信息 · 列表查询',
+  '/alarm/map': '接处警报警信息 · 地图展示'
 }
 const title = computed(() => titleMap[route.path] || '警用设备数据服务')
 </script>

@@ -12,7 +12,9 @@ const routes = [
       { path: '/device-info/map', component: () => import('../views/DeviceInfoMap.vue') },
       { path: '/device-info/import', component: () => import('../views/DeviceInfoImport.vue') },
       { path: '/device-location/query', component: () => import('../views/DeviceLocationQuery.vue') },
-      { path: '/device-location/import', component: () => import('../views/DeviceLocationImport.vue') }
+      { path: '/device-location/import', component: () => import('../views/DeviceLocationImport.vue') },
+      { path: '/alarm/list', component: () => import('../views/AlarmList.vue') },
+      { path: '/alarm/map', component: () => import('../views/AlarmMap.vue') }
     ]
   }
 ]

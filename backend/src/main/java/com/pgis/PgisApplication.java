@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(MapUiProperties.class)
-@MapperScan({"com.pgis.deviceinfo", "com.pgis.devicelocation"})
+@MapperScan({"com.pgis.deviceinfo", "com.pgis.devicelocation", "com.pgis.alarm"})
 public class PgisApplication {
     public static void main(String[] args) {
         SpringApplication.run(PgisApplication.class, args);

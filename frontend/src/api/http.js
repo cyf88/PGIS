@@ -64,3 +64,15 @@ export function importDeviceLocation(files, onUploadProgress) {
   files.forEach((f) => form.append('files', f))
   return http.post('/api/import/device-location', form, { onUploadProgress })
 }
+
+export function queryAlarms(params) {
+  return http.get('/api/alarm', { params })
+}
+
+export function getAlarm(jjbh) {
+  return http.get(`/api/alarm/${jjbh}`)
+}
+
+export function queryAlarmMapPoints(params) {
+  return http.get('/api/alarm/map-points', { params })
+}

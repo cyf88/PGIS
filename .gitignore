@@ -3,3 +3,5 @@ Thumbs.db
 *.log
 .idea/
 *.iml
+# 导入脚本生成的报警数据 SQL（含真实隐私数据，不入库）
+scripts/jqhj_jjdb_import.sql
