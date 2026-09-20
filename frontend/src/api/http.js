@@ -76,3 +76,15 @@ export function getAlarm(jjbh) {
 export function queryAlarmMapPoints(params) {
   return http.get('/api/alarm/map-points', { params })
 }
+
+export function queryCases(params) {
+  return http.get('/api/case', { params })
+}
+
+export function getCase(xxzjbh) {
+  return http.get(`/api/case/${xxzjbh}`)
+}
+
+export function queryCaseMapPoints(params) {
+  return http.get('/api/case/map-points', { params })
+}

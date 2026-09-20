@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pgis.caseinfo.CaseMapper">
+
+    <sql id="cols">
+        sjhj_appid, sjhj_sbpcid, sjhj_sbsj, sjhj_jmms, sjhj_xfz, sjxfsj,
+        bjajbm, asjbh, ajmc, ajlydm, ajlymc, jjdbh, ysajdwmc, ysajdwlxdm, ysajdwlxmc,
+        jyaq, fxasjsj, ajfskssj, ajfsjssj, zaxsdm, zaxsmc, zasjdm, zasjmc, zasjlbbcms,
+        ajfsdzdylbdm, ajfsdzdylbmc, ajfsdxzqhdm, ajfsdxzqhmc, ajfsdzjd, ajfsdzwd, ajfsdzmc,
+        sacslbdm, sacslbmc, sacslbbcms, ajfsdkjbwlbdm, ajfsdkjbwlbmc, ajfsdkjbwbcms,
+        ajfsdfslc, ajfsdjzwcs, ajfsdsfjzwn, ajfsdsfzlzz, whcd, zars, ssrs, swrs,
+        sscwjyqk, ssjz, sazz, sjcwjz, zatjzhms, xkbh, gtfzxzdm, gtfzxzmc,
+        swysdm, swysmc, sjgbhdqdm, sjgbhdqmc, swajswqk, slsj, sldwdm, sldwmc, larq,
+        badwdm, badwmc, zbrsfzh, zbrlxdh, zbrxm, dbjbdm, dbjbmc, zczjzcxwyjms, zczjsj,
+        zczjdwdm, zczjdwmc, pafsdm, pafsmc, ysqsajscfjdmd, ysqsajscfjdmmc,
+        zxzajsj, zxzajjsdwdm, zxzajjsdwmc, sjczlxdm, sjly, lrsj, lrdwdm, lrdwmc,
+        lrrxm, lrrsfzh, xgsj, xgdwdm, xgdwmc, xgrxm, xgrsfzh, xxzjbh, wtsjbh, pt
+    </sql>
+
+    <sql id="filters">
+        <where>
+            <if test="asjbh != null and asjbh != ''">AND asjbh LIKE CONCAT('%', #{asjbh}, '%')</if>
+            <if test="ajmc != null and ajmc != ''">AND ajmc LIKE CONCAT('%', #{ajmc}, '%')</if>
+            <if test="ajfsdxzqhdm != null and ajfsdxzqhdm != ''">AND ajfsdxzqhdm LIKE CONCAT(#{ajfsdxzqhdm}, '%')</if>
+            <if test="sjly != null and sjly != ''">AND sjly = #{sjly}</if>
+        </where>
+    </sql>
+
+    <select id="selectById" resultType="com.pgis.caseinfo.CaseRecord">
+        SELECT <include refid="cols"/> FROM xsan WHERE xxzjbh = #{xxzjbh}
+    </select>
+
+    <select id="selectPage" resultType="com.pgis.caseinfo.CaseRecord">
+        SELECT <include refid="cols"/> FROM xsan
+        <include refid="filters"/>
+        ORDER BY slsj DESC, xxzjbh
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(1) FROM xsan
+        <include refid="filters"/>
+    </select>
+
+    <select id="selectMapPoints" resultType="com.pgis.caseinfo.CaseMapPoint">
+        SELECT
+            ajfsdzjd AS lng,
+            ajfsdzwd AS lat,
+            xxzjbh, asjbh, ajmc, ajfsdxzqhmc, ajfsdzmc, jyaq, slsj, ajlydm
+        FROM xsan
+        WHERE ajfsdzjd IS NOT NULL
+          AND ajfsdzwd IS NOT NULL
+          AND ajfsdzjd BETWEEN #{minLng} AND #{maxLng}
+          AND ajfsdzwd BETWEEN #{minLat} AND #{maxLat}
+          AND NOT (ajfsdzjd = 0 AND ajfsdzwd = 0)
+          <if test="xzqhdm != null and xzqhdm != ''">AND ajfsdxzqhdm LIKE CONCAT(#{xzqhdm}, '%')</if>
+        ORDER BY slsj DESC
+        LIMIT 1000
+    </select>
+
+    <select id="selectNoLocation" resultType="com.pgis.caseinfo.CaseRecord">
+        SELECT <include refid="cols"/> FROM xsan
+        WHERE (ajfsdzjd IS NULL OR ajfsdzwd IS NULL OR ajfsdzjd = '' OR ajfsdzwd = '')
+        ORDER BY slsj DESC
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateLocation">
+        UPDATE xsan
+        SET ajfsdzjd = #{ajfsdzjd}, ajfsdzwd = #{ajfsdzwd}
+        WHERE xxzjbh = #{xxzjbh}
+    </update>
+</mapper>
