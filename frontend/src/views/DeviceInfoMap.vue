@@ -132,8 +132,8 @@ let suppressMoveReload = false
 
 onMounted(async () => {
   mapCfg = await loadMapConfig()
-  basemaps.value = mapCfg.basemaps
-  basemapId.value = pickBasemapId(mapCfg)
+  basemaps.value = filterBasemapsForStandalone(mapCfg.basemaps)
+  basemapId.value = pickBasemapId({ ...mapCfg, basemaps: basemaps.value })
   map = L.map(mapEl.value, { zoomControl: true }).setView(regionCenter(fallbackBounds()), mapCfg.provinceZoom)
   applyBasemap(basemapId.value)
   map.on('moveend', scheduleReload)
@@ -256,6 +256,13 @@ function pickBasemapId(cfg) {
   }
   if (cfg.defaultBasemap && ids.has(cfg.defaultBasemap)) return cfg.defaultBasemap
   return cfg.basemaps[0]?.id || 'gaode'
+}
+
+// 独立地图窗口（/map/* 新窗口）：仅使用内网栅格底图，隐藏切换选项
+function filterBasemapsForStandalone(list) {
+  if (!location.pathname.startsWith('/map/')) return list
+  const intranet = (list || []).filter((item) => item.id === 'intranet')
+  return intranet.length ? intranet : (list || []).slice(0, 1)
 }
 
 function currentBasemap(id = basemapId.value) {

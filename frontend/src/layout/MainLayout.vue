@@ -2,12 +2,12 @@
   <el-container class="layout">
     <el-aside width="220px" class="aside">
       <div class="logo">警用设备数据服务</div>
-      <el-menu :default-active="active" router>
+      <el-menu :default-active="active" @select="onMenuSelect">
         <el-sub-menu index="info">
           <template #title>警用设备基本信息</template>
           <el-menu-item index="/device-info/query">查询</el-menu-item>
           <el-menu-item index="/device-info/by-sjly">按来源检索</el-menu-item>
-          <el-menu-item index="/device-info/map">地图聚合</el-menu-item>
+          <el-menu-item index="/map/device-info">地图聚合</el-menu-item>
           <el-menu-item index="/device-info/import">导入</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="loc">
@@ -18,12 +18,12 @@
         <el-sub-menu index="alarm">
           <template #title>接处警报警信息</template>
           <el-menu-item index="/alarm/list">列表查询</el-menu-item>
-          <el-menu-item index="/alarm/map">地图展示</el-menu-item>
+          <el-menu-item index="/map/alarm">地图展示</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="case">
           <template #title>案件信息</template>
           <el-menu-item index="/case/list">列表查询</el-menu-item>
-          <el-menu-item index="/case/map">地图展示</el-menu-item>
+          <el-menu-item index="/map/case">地图展示</el-menu-item>
         </el-sub-menu>
       </el-menu>
     </el-aside>
@@ -38,9 +38,20 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
+
+// 地图类菜单在独立窗口打开（无侧边导航），其余菜单页内跳转
+function onMenuSelect(path) {
+  if (path.startsWith('/map/')) {
+    window.open(path, '_blank')
+  } else {
+    router.push(path)
+  }
+}
+
 const active = computed(() => route.path)
 const titleMap = {
   '/device-info/query': '警用设备基本信息 · 查询',

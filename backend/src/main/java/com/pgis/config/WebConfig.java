@@ -23,5 +23,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/device-location/**").setViewName("forward:/index.html");
         registry.addViewController("/alarm/**").setViewName("forward:/index.html");
         registry.addViewController("/case/**").setViewName("forward:/index.html");
+        registry.addViewController("/map/**").setViewName("forward:/index.html");
     }
 }
